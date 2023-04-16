@@ -1,5 +1,5 @@
-import { SchemaValidator } from "./schema-validator.js";
-import { BinaryGetter } from "./binary-getter.js";
+import { SchemaValidator } from "./core/schema-validator.js";
+import { BinaryConverter } from "./core/binary-converter.js";
 
 export class DecodeSchemaValidator extends SchemaValidator {
   number(value, maxBit) {
@@ -52,21 +52,49 @@ export class DecodeSchemaValidator extends SchemaValidator {
   }
 }
 
-export const decode = (data, schema) => {
-  const result = [];
-  const validator = new DecodeSchemaValidator();
-  const binaryGetter = new BinaryGetter();
+class Decode {
+  constructor(data, schema) {
+    this.data = data;
+    this.schema = schema;
 
-  for (let i = 0; i <= data.byteLength - 1; i++) {
-    const value = data[i];
-    const [maxBit, type] = schema[i];
-
-    validator[type](value, maxBit);
-
-    const convertedValue = binaryGetter.convertBinaryValue(value);
-
-    result.push(convertedValue);
+    this.decodedResult = [];
+    this.binaryConverter = new BinaryConverter();
+    this.validator = new DecodeSchemaValidator();
   }
 
-  return result;
+  validateValueByIndex(index) {
+    const value = this.data[index];
+    const [maxBit, type] = this.schema[index];
+
+    return this.validator[type](value, maxBit);
+  }
+
+  setDecodedValueByIndex(index) {
+    const value = this.data[index];
+    const decodedValue = this.binaryConverter.fromBinary(value);
+
+    this.decodedResult.push(decodedValue);
+  }
+
+  run() {
+    for (let index = 0; index <= this.data.byteLength - 1; index++) {
+      const validationResult = this.validateValueByIndex(index);
+
+      if (!validationResult.isValid) {
+        console.error(validationResult);
+
+        throw new Error("error");
+      }
+
+      this.setDecodedValueByIndex(index);
+    }
+
+    return this.decodedResult;
+  }
+}
+
+export const decode = (data, schema) => {
+  const decode = new Decode(data, schema);
+
+  return decode.run();
 };

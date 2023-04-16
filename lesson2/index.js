@@ -9,8 +9,6 @@ const schema = [
   [16, "ascii"], // 16 бит 2 аски символа
 ];
 
-// 😋
-
 const data = [7, 3, true, false, "ab"];
 console.log("🚀 ~ file: index.js:15 ~ data:", data);
 

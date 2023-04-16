@@ -5,16 +5,21 @@ export class SchemaValidator {
   constructor() {
     this.validator = new Validator();
     this.messages = {
-      isNumber: "Значение не явялется типом Number",
-      isBoolean: "Значение не является типом Boolean",
-      isMaxBitLength: "Значение превышает количетсво допустимых бит",
+      isString: "Значение должно быть типом String",
+      isNumber: "Значение должно быть типом Number",
+      isBinary: "Значение должно быть в бинаром виде",
+      isBoolean: "Значение должно быть типом Boolean",
       isAscii: "Строка должна состоять из ascii-символов",
+      isUnit8Array: "Значение должно быть типом Number Unit8Array",
+      isMaxBitLength: "Значение превышает количетсво допустимых бит",
+      isBinaryBoolean: "Значение должно быть типом Boolean в бинаром виде",
       isCorrectAsciiBitValue: `Количество бит должно быть кратно ${BYTE_LENGTH}`,
     };
   }
 
   validate(value, rules) {
     const result = {
+      value,
       isValid: true,
       field: [],
     };
@@ -32,12 +37,6 @@ export class SchemaValidator {
       if (!isValid) {
         result.isValid = false;
       }
-    }
-
-    if (!result.isValid) {
-      console.error({ value, params: result.field });
-
-      throw new Error("Ошибка валидации");
     }
 
     return result;

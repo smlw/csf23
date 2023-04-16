@@ -1,7 +1,7 @@
-import { BinaryGetter } from "./binary-getter.js";
+import { BinaryConverter } from "./core/binary-converter.js";
 
-import { BYTE_LENGTH } from "./constants.js";
-import { SchemaValidator } from "./schema-validator.js";
+import { BYTE_LENGTH } from "./core/constants.js";
+import { SchemaValidator } from "./core/schema-validator.js";
 
 export class EncodeSchemaValidator extends SchemaValidator {
   number(value, maxBit) {
@@ -58,25 +58,62 @@ export class EncodeSchemaValidator extends SchemaValidator {
   }
 }
 
-export const encode = (data, schema) => {
-  const buffer = new ArrayBuffer(data.length);
-  const validator = new EncodeSchemaValidator();
-  const binaryGetter = new BinaryGetter();
+class Encode {
+  constructor(data, schema) {
+    this.data = data;
+    this.schema = schema;
 
-  for (let i = 0; i <= data.length - 1; i++) {
-    const value = data[i];
-    const [maxBit, type] = schema[i];
-
-    validator[type](value, maxBit);
-
-    const binaryValue = binaryGetter.getBinaryValue(value);
-    if (Array.isArray(binaryValue)) {
-      buffer[i] = new Uint8Array(maxBit / BYTE_LENGTH);
-      binaryValue.forEach((v, j) => (buffer[i][j] = "0b" + v));
-    } else {
-      buffer[i] = Number(binaryValue);
-    }
+    this.buffer = new ArrayBuffer(data.length);
+    this.validator = new EncodeSchemaValidator();
+    this.binaryConverter = new BinaryConverter();
   }
 
-  return buffer;
+  validateValueByIndex(index) {
+    const value = this.data[index];
+    const [maxBit, type] = this.schema[index];
+
+    return this.validator[type](value, maxBit);
+  }
+
+  setBufferValueByIndex(index) {
+    const value = this.data[index];
+    const maxBit = this.schema[index][0];
+
+    const binaryValue = this.binaryConverter.toBinary(value);
+
+    // Если binaryValue - массив, то создаем Uint8Array и заполняем его значениями
+    if (Array.isArray(binaryValue)) {
+      this.buffer[index] = this._createUint8Array(maxBit);
+      return binaryValue.forEach((v, j) => (this.buffer[index][j] = "0b" + v));
+    }
+
+    // Иначе просто заполянем буффер бинарным значением
+    return (this.buffer[index] = Number(binaryValue));
+  }
+
+  run() {
+    for (let index = 0; index <= this.data.length - 1; index++) {
+      const validationResult = this.validateValueByIndex(index);
+
+      if (!validationResult.isValid) {
+        console.error(validationResult);
+
+        throw new Error("error");
+      }
+
+      this.setBufferValueByIndex(index);
+    }
+
+    return this.buffer;
+  }
+
+  _createUint8Array(size) {
+    return new Uint8Array(size / BYTE_LENGTH);
+  }
+}
+
+export const encode = (data, schema) => {
+  const encode = new Encode(data, schema);
+
+  return encode.run();
 };
