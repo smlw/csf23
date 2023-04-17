@@ -5,7 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest"
   },
   "repository": {
     "type": "git",
@@ -18,6 +18,11 @@
   },
   "homepage": "https://github.com/smlw/csf23#readme",
   "dependencies": {
+    "jest-environment-jsdom-sixteen": "^2.0.0",
+    "jest-environment-node": "^29.5.0",
     "lodash-es": "^4.17.21"
+  },
+  "devDependencies": {
+    "jest": "^29.5.0"
   }
 }

@@ -98,7 +98,7 @@ class Encode {
       if (!validationResult.isValid) {
         console.error(validationResult);
 
-        throw new Error("error");
+        throw new Error("Ошибка валидации");
       }
 
       this.setBufferValueByIndex(index);
