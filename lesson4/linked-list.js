@@ -49,6 +49,12 @@ export class LinkedList {
 
     const temp = this.first.data;
 
+    if (this.first.next === null) {
+      this.last = null;
+    } else {
+      this.first.next.prev = null;
+    }
+
     this.first = this.first.next;
 
     return temp;
@@ -61,11 +67,13 @@ export class LinkedList {
 
     const temp = this.last.data;
 
-    this.last = this.last.prev;
-
-    if (this.last === null) {
+    if (this.first.next === null) {
       this.first = null;
+    } else {
+      this.last.prev.next = null;
     }
+
+    this.last = this.last.prev;
 
     return temp;
   }

@@ -32,4 +32,4 @@ console.log(queue.head); // 11
 
 console.log(queue.pop()); // 11
 console.log(queue.pop()); // 12
-console.log(queue.pop()); // Exception
+// console.log(queue.pop()); // Exception
