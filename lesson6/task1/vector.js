@@ -94,32 +94,17 @@ class Vector {
   }
 
   isEmpty() {
-    return Boolean(this.length);
+    return !this.length;
   }
 }
 
 const uint8Vector = new Vector(Uint8Array, { capacity: 2 });
-// uint8Vector.push(10);
-// uint8Vector.push(20);
-// uint8Vector.push(30);
-// uint8Vector.push(40);
-// uint8Vector.push(60, 70, 80);
-uint8Vector.push(50);
-uint8Vector.push(50);
-uint8Vector.push(50);
-uint8Vector.push(50);
-uint8Vector.push(50);
-uint8Vector.push(50);
-uint8Vector.push(50);
-uint8Vector.push(50);
-uint8Vector.push(50);
-// uint8Vector.shift();
-// uint8Vector.unshift(1, 2);
-// uint8Vector.pop();
-// uint8Vector.pop();
-console.log(
-  "🚀 ~ file: vector.js:52 ~ uint8Vector:",
-  uint8Vector.buffer,
-  uint8Vector.lastIndex,
-  uint8Vector.length
-);
+
+console.log(uint8Vector.push(100)); // 1
+console.log(uint8Vector.push(20, 10)); // 3
+
+console.log(uint8Vector.pop()); // 10
+console.log(uint8Vector.shift()); // 100
+
+console.log(uint8Vector.unshift(1)); // 2
+console.log(uint8Vector.length); // 2
